@@ -48,12 +48,19 @@ function BookmarksPage({
   }, []);
 
   const handleOpenAllBookmarks = () => {
-    // Open all bookmarks in new tabs
-    bookmarks.forEach((bookmark) => {
-      if (bookmark.url) {
-        window.open(bookmark.url, "_blank");
-      }
-    });
+    // Open all bookmarks in a new window
+    if (bookmarks.length === 0) {
+      return;
+    }
+
+    const bookmarkUrls = bookmarks.filter(bookmark => bookmark.url).map(bookmark => ({ url: bookmark.url }));
+    
+    if (bookmarkUrls.length > 0) {
+      chrome.runtime.sendMessage({
+        command: 'OPEN_TABS',
+        tabs: bookmarkUrls
+      });
+    }
   };
 
   const handleAddToBookmarks = () => {
